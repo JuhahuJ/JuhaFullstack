@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import countryService from './services/countries'
+import weatherService from './services/weather'
 
 const Filter = ({value, onChange}) => {
   return (
@@ -8,7 +9,6 @@ const Filter = ({value, onChange}) => {
 }
 
 const Country = ({country}) => {
-  console.log(country)
   return (
     <div>
       <h2>{country.name.common}</h2>
@@ -28,14 +28,14 @@ const Country = ({country}) => {
   )
 }
 
-const Countries = ({countries, search}) => {
+const Countries = ({countries, search, showCountry}) => {
   const filtered = countries.filter(country => country.name.common.toLowerCase().includes(search.toLowerCase()))
   if (search === '') {
     return <p>Please search for countries</p>
   } else if (filtered.length > 10) {
     return <p>Too many matches, specify another filter</p>
   } else if (filtered.length <= 10 && filtered.length > 1) {
-    return filtered.map(country => <p key={country.name.common}>{country.name.common}</p>)
+    return filtered.map(country => <p key={country.name.common}>{country.name.common}<button onClick={() => showCountry(country)}>show</button></p>)
   } else if (filtered.length == 1) {
     return <Country country={filtered[0]}/>
   } else return <p>No matches found</p>
@@ -56,10 +56,14 @@ const App = () => {
 
   const handleSearch = (event) => setSearch(event.target.value)
 
+  const showCountry = country => {
+    setSearch(country.name.common)
+  }
+
   return (
     <div>
       <Filter value={search} onChange={handleSearch}/>
-      <Countries countries={countries} search={search}/>
+      <Countries countries={countries} search={search} showCountry={showCountry}/>
     </div>
   )
 
