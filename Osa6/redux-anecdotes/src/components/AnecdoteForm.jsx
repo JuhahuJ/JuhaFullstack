@@ -1,15 +1,19 @@
 import { useDispatch } from 'react-redux'
 import { newAnecdote } from '../reducers/anecdoteReducer'
+import { setNotification, clearNotification } from '../reducers/notificationReducer'
 
 const AnecdoteForm = () => {
 	const dispatch = useDispatch()
 
 	const newA = (event) => {
-		console.log(event)
 		event.preventDefault()
 		const content = event.target.anAnecdote.value
 		event.target.anAnecdote.value = ''
 		dispatch(newAnecdote(content))
+		dispatch(setNotification(`You added '${content}'`))
+		setTimeout(() => {
+			dispatch(clearNotification())
+		}, 5000)
 	}
 
 	return (
