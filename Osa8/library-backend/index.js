@@ -26,7 +26,7 @@ mongoose.connect(MONGODB_URI)
 const typeDefs = `
   type User {
     username: String!
-    favoriteGenre: String!
+    favoriteGenre: String
     id: ID!
   }
 
@@ -90,11 +90,11 @@ const resolvers = {
     allBooks: async (root, args) => {
       if (args.author || args.genre) {
         const author = await Author.findOne({ name: args.author })
-        if (!args.author) return await Book.find({ genres: args.genre })
-        if (!args.genre) return await Book.find({ author: author.id })
-        return await Book.find({ author: author.id, genres: args.genre })
+        if (!args.author) return await Book.find({ genres: args.genre }).populate('author')
+        if (!args.genre) return await Book.find({ author: author.id }).populate('author')
+        return await Book.find({ author: author.id, genres: args.genre }).populate('author')
       }
-      return await Book.find({})
+      return await Book.find({}).populate('author')
     },
     allAuthors: async () => await Author.find({}),
     me: (root, args, context) => context.currentUser

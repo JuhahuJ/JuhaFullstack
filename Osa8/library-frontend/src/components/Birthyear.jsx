@@ -1,9 +1,9 @@
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { EDIT_AUTHOR, ALL_AUTHORS } from '../queries'
 import Select from 'react-select'
 
-const SetBirthyear = ({ authors }) => {
+const SetBirthyear = () => {
 	const [born, setBorn] = useState('')
 	const [selectedOption, setSelectedOption] = useState(null)
 
@@ -11,12 +11,23 @@ const SetBirthyear = ({ authors }) => {
 		refetchQueries: [{ query: ALL_AUTHORS }]
 	})
 
+	const token = localStorage.getItem('library-user-token')
+
+	const result = useQuery(ALL_AUTHORS)
+
+	let authors
+
+	if (result.loading) {
+		return <div>loading...</div>
+	} else {
+		authors = result.data.allAuthors
+	}
+
 	const submit = async (event) => {
 		event.preventDefault()
 
 		updateAuthor({ variables: { name: selectedOption.value, born: parseInt(born) } })
 
-		setName('')
 		setBorn('')
 	}
 
@@ -24,6 +35,8 @@ const SetBirthyear = ({ authors }) => {
 		value: author.name,
 		label: author.name
 	}))
+
+	if (!token) return <div>you are not logged in</div>
 
 	return (
 		<div>

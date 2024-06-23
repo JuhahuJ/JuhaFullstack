@@ -9,6 +9,8 @@ const NewBook = () => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
+  const token = localStorage.getItem('library-user-token')
+
   const [createBook] = useMutation(CREATE_BOOK, {
     refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
   })
@@ -29,6 +31,8 @@ const NewBook = () => {
     setGenres(genres.concat(genre))
     setGenre('')
   }
+
+  if (!token) return <div>you are not logged in</div>
 
   return (
     <div>

@@ -2,37 +2,46 @@ import Authors from "./components/Authors"
 import Books from "./components/Books"
 import NewBook from "./components/NewBook"
 import SetBirthyear from "./components/Birthyear"
+import LoginForm from "./components/LoginForm"
 import { Routes, Route, Link } from 'react-router-dom'
-import { useQuery } from "@apollo/client"
-import { ALL_AUTHORS } from "./queries"
+import { useState } from "react"
+import { useApolloClient } from "@apollo/client"
+
 
 const App = () => {
-  const result = useQuery(ALL_AUTHORS)
+  const [token, setToken] = useState(localStorage.getItem('library-user-token'))
+  const client = useApolloClient()
 
-  let authors
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
+  }
 
-  if (result.loading) {
-    return <div>loading...</div>
-  } else {
-    authors = result.data.allAuthors
+  const padding = {
+    paddingRight: 5
   }
 
   return (
     <div>
       <div>
-        <Link to='/authors'>authors</Link>||
-        <Link to='/books'>books</Link>||
-        <Link to='/add'>add</Link>||
-        <Link to='/birthyear'>set birthyear</Link>
+        <Link style={padding} to='/authors'>authors</Link>
+        <Link style={padding} to='/books'>books</Link>
+        {token && <Link style={padding} to='/add'>add</Link>}
+        {token && <Link style={padding} to='/birthyear'>set birthyear</Link>}
+        {!token && <Link style={padding} to='/login'>login</Link>}
       </div>
 
       <Routes>
-        <Route path="/authors" element={<Authors authors={authors} />} />
+        <Route path="/authors" element={<Authors />} />
         <Route path="/" element={<Authors />} />
         <Route path="/books" element={<Books />} />
-        <Route path="/add" element={<NewBook />} />
-        <Route path="/birthyear" element={<SetBirthyear authors={authors} />} />
+        <Route path="/add" element={<NewBook token={token} />} />
+        <Route path="/birthyear" element={<SetBirthyear token={token} />} />
+        <Route path="/login" element={<LoginForm setToken={setToken} token={token} />} />
       </Routes>
+
+      {token && <button onClick={logout}>logout</button>}
     </div>
   )
 }
