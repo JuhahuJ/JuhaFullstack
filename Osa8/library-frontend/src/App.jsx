@@ -5,12 +5,19 @@ import SetBirthyear from "./components/Birthyear"
 import LoginForm from "./components/LoginForm"
 import { Routes, Route, Link } from 'react-router-dom'
 import { useState } from "react"
-import { useApolloClient } from "@apollo/client"
-
+import { useApolloClient, useSubscription } from "@apollo/client"
+import { BOOK_ADDED } from "./queries"
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('library-user-token'))
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      console.log('geg')
+      window.alert(`A new book was added ${data.data.bookAdded.title}. Please refresh the page!`)
+    }
+  })
 
   const logout = () => {
     setToken(null)
