@@ -11,6 +11,15 @@ const getAll = async () => {
   return data;
 };
 
+const getWithId = async (id: string | undefined) => {
+  if (!id) return null;
+  const { data } = await axios.get<Patient>(
+    `${apiBaseUrl}/patients/${id}`
+  );
+
+  return data;
+};
+
 const create = async (object: PatientFormValues) => {
   const { data } = await axios.post<Patient>(
     `${apiBaseUrl}/patients`,
@@ -21,6 +30,6 @@ const create = async (object: PatientFormValues) => {
 };
 
 export default {
-  getAll, create
+  getAll, create, getWithId
 };
 
